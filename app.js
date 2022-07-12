@@ -54,9 +54,31 @@ const defaultProducts = [product1, product2, product3];
 
 // defaultProducts.save();
 
-app.post("/test", function (req, res) {
-  res.send("done!");
+app.get("/test", function (req, res) {
+  //   get the default product list from database
+  Product.find({}, function (err, foundProducts) {
+    if (foundProducts.length === 0) {
+      Product.insertMany(defaultProducts, function (err) {
+        if (err) {
+          console.log(err);
+        } else {
+          console.log("Successfully saved default products to DB.");
+        }
+      });
+      res.send("ok");
+    } else {
+      res.send("ok");
+    }
+  });
 });
+
+app.post("/test", function (req, res) {
+  //add the new product to the database
+});
+
+// app.post("/test", function (req, res) {
+//   res.send("done!");
+// });
 
 app.listen(3000, function () {
   console.log("Server started on port 3000");
