@@ -1,12 +1,13 @@
 //jshint esversion:6
 
 const express = require("express");
-const bodyParser = require("body-parser");
+// const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 
 const app = express();
 
-app.use(bodyParser.urlencoded({ extended: true }));
+// app.use(bodyParser.urlencoded({ extended: true }));
+app.use(express.json());
 app.use(express.static("public"));
 
 mongoose.connect("mongodb://localhost:27017/productsDB", {
@@ -54,7 +55,7 @@ const defaultProducts = [product1, product2, product3];
 
 // defaultProducts.save();
 
-app.get("/test", function (req, res) {
+app.post("/test", function (req, res) {
   //   get the default product list from database
   Product.find({}, function (err, foundProducts) {
     if (foundProducts.length === 0) {
@@ -72,13 +73,21 @@ app.get("/test", function (req, res) {
   });
 });
 
-app.post("/test", function (req, res) {
+app.post("/product", function (req, res) {
   //add the new product to the database
-});
+  const { name, key, costInRMB, usualPrice, description } = req.body;
 
-// app.post("/test", function (req, res) {
-//   res.send("done!");
-// });
+  const product = new Product({
+    key: key,
+    name: name,
+    costInRMB: costInRMB,
+    usualPrice: usualPrice,
+    description: description,
+  });
+
+  product.save();
+  res.send("Saved new product to DB.");
+});
 
 app.listen(3000, function () {
   console.log("Server started on port 3000");
