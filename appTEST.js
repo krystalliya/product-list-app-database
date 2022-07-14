@@ -1,5 +1,5 @@
 //jshint esversion:6
-const cors = require("cors");
+
 const express = require("express");
 // const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
@@ -9,7 +9,6 @@ const app = express();
 // app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(express.static("public"));
-app.use(cors());
 
 mongoose.connect("mongodb://localhost:27017/productsDB", {
     useNewUrlParser: true,
@@ -54,22 +53,44 @@ const product3 = new Product({
 
 const defaultProducts = [product1, product2, product3];
 
-app.post("/test", function (req, res) {
+// defaultProducts.save();
+
+app.post("/test", async function (req, res) {
     //   get the default product list from database
-    Product.find({}, function (err, foundProducts) {
+    //   Product.find({}, function (err, foundProducts) {
+    //     if (foundProducts.length === 0) {
+    //       Product.insertMany(defaultProducts, function (err) {
+    //         if (err) {
+    //           console.log(err);
+    //         } else {
+    //           console.log("Successfully saved default products to DB.");
+    //         }
+    //       });
+
+    // Promise
+    //    Product.insertMany(defaultProducts).then( () => {
+    //     console.log("ok");
+    //    }).catch( (err) => {
+    //     console.log(err);
+    //    })
+
+    // async / await
+    try {
+        foundProducts = await Product.find({});
         if (foundProducts.length === 0) {
-            Product.insertMany(defaultProducts, function (err) {
-                if (err) {
-                    console.log(err);
-                } else {
-                    console.log("Successfully saved default products to DB.");
-                }
-            });
-            res.send("ok");
-        } else {
-            res.send("ok");
+            await Product.insertMany(defaultProducts);
         }
-    });
+        console.log("success");
+    } catch (err) {
+        console.log(err);
+        res.send("failed");
+    }
+
+    //   res.send("ok");
+    // } else {
+    //   res.send("ok");
+    // }
+    //   });
 });
 
 app.post("/product", function (req, res) {
@@ -88,22 +109,14 @@ app.post("/product", function (req, res) {
     res.send("Saved new product to DB.");
 });
 
-app.get("/products", function (req, res) {
-    res.send(defaultProducts);
-
-    //TODO:
-    //get data from database to replace the "defaultProducts"
-});
-
 app.delete("/product", function (req, res) {});
 
 app.put("/product", function (req, res) {});
 
 app.get("/view", function (req, res) {
-    //TODO:
     //get product data when press view button
 });
 
-app.listen(8000, function () {
-    console.log("Server started on port 8000");
+app.listen(3000, function () {
+    console.log("Server started on port 3000");
 });
