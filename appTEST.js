@@ -55,43 +55,53 @@ const defaultProducts = [product1, product2, product3];
 
 // defaultProducts.save();
 
-app.post("/test", async function (req, res) {
-    //   get the default product list from database
-    //   Product.find({}, function (err, foundProducts) {
-    //     if (foundProducts.length === 0) {
-    //       Product.insertMany(defaultProducts, function (err) {
-    //         if (err) {
-    //           console.log(err);
-    //         } else {
-    //           console.log("Successfully saved default products to DB.");
-    //         }
-    //       });
-
-    // Promise
-    //    Product.insertMany(defaultProducts).then( () => {
-    //     console.log("ok");
-    //    }).catch( (err) => {
-    //     console.log(err);
-    //    })
-
-    // async / await
-    try {
-        foundProducts = await Product.find({});
+app.post("/test", function (req, res) {
+    Product.find({}, function (err, foundProducts) {
         if (foundProducts.length === 0) {
-            await Product.insertMany(defaultProducts);
+            Product.insertMany(defaultProducts, function (err) {
+                if (err) {
+                    console.log(err);
+                } else {
+                    console.log("Successfully saved to DB.");
+                }
+            });
+            res.send("ok");
+        } else {
+            res.send("ok");
         }
-        console.log("success");
-    } catch (err) {
-        console.log(err);
-        res.send("failed");
-    }
-
-    //   res.send("ok");
-    // } else {
-    //   res.send("ok");
-    // }
-    //   });
+    });
 });
+
+//TODO: Promise
+// app.post("/test", async function (req, res) {
+//     Product.find({}, function (err, foundProducts) {
+//         if (foundProducts.length === 0) {
+//             Product.insertMany(defaultProducts)
+//                 .then(() => {
+//                     console.log("ok");
+//                 })
+//                 .catch((err) => {
+//                     console.log(err);
+//                 });
+//         } else {
+//             res.send("ok");
+//         }
+//     });
+// });
+
+//TODO: async / await
+// app.post("/test", async function (req, res) {
+//     try {
+//         foundProducts = await Product.find({});
+//         if (foundProducts.length === 0) {
+//             await Product.insertMany(defaultProducts);
+//         }
+//         console.log("success");
+//     } catch (err) {
+//         console.log(err);
+//         res.send("failed");
+//     }
+// });
 
 app.post("/product", function (req, res) {
     //add the new product to the database

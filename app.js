@@ -72,24 +72,39 @@ app.post("/test", function (req, res) {
     });
 });
 
-app.post("/product", function (req, res) {
-    //add the new product to the database
-    const { name, key, costInRMB, usualPrice, description } = req.body;
+//add the new product to the database
+app.post("/product", async function (req, res) {
+    try {
+        const { name, key, costInRMB, usualPrice, description } = req.body;
 
-    const product = new Product({
-        key: key,
-        name: name,
-        costInRMB: costInRMB,
-        usualPrice: usualPrice,
-        description: description,
-    });
+        const product = new Product({
+            key: key,
+            name: name,
+            costInRMB: costInRMB,
+            usualPrice: usualPrice,
+            description: description,
+        });
 
-    product.save();
-    res.send("Saved new product to DB.");
+        await product.save();
+
+        res.status(200).send("Saved new product to DB.");
+    } catch (err) {
+        console.log(err);
+
+        res.status(500).send("Failed");
+    }
 });
 
-app.get("/products", function (req, res) {
-    res.send(defaultProducts);
+//load product in main page
+app.get("/products", async function (req, res) {
+    try {
+        const products = await Product.find({});
+
+        res.status(200).send(products);
+    } catch (err) {
+        console.log(err);
+        res.status(500).send("Failed");
+    }
 
     //TODO:
     //get data from database to replace the "defaultProducts"
