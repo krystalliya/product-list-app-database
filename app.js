@@ -16,7 +16,6 @@ mongoose.connect("mongodb://localhost:27017/productsDB", {
 });
 
 const productSchema = new mongoose.Schema({
-    key: Number,
     name: String,
     costInRMB: Number,
     usualPrice: Number,
@@ -26,7 +25,6 @@ const productSchema = new mongoose.Schema({
 const Product = mongoose.model("Product", productSchema);
 
 const product1 = new Product({
-    key: 1,
     name: "Fishtail Mix 200pc",
     costInRMB: 6.5,
     usualPrice: 5.99,
@@ -35,7 +33,6 @@ const product1 = new Product({
 });
 
 const product2 = new Product({
-    key: 2,
     name: "A-Fairy Mix 200pc",
     costInRMB: 5.5,
     usualPrice: 5.5,
@@ -44,7 +41,6 @@ const product2 = new Product({
 });
 
 const product3 = new Product({
-    key: 3,
     name: "Lower Lash 120pc",
     costInRMB: 3.5,
     usualPrice: 4.5,
@@ -55,7 +51,6 @@ const product3 = new Product({
 const defaultProducts = [product1, product2, product3];
 
 app.post("/test", function (req, res) {
-    //   get the default product list from database
     Product.find({}, function (err, foundProducts) {
         if (foundProducts.length === 0) {
             Product.insertMany(defaultProducts, function (err) {
@@ -72,13 +67,24 @@ app.post("/test", function (req, res) {
     });
 });
 
+//load product in main page
+app.get("/products", async function (req, res) {
+    try {
+        const products = await Product.find({});
+
+        res.status(200).send(products);
+    } catch (err) {
+        console.log(err);
+        res.status(500).send("Failed");
+    }
+});
+
 //add the new product to the database
 app.post("/product", async function (req, res) {
     try {
-        const { name, key, costInRMB, usualPrice, description } = req.body;
+        const { name, costInRMB, usualPrice, description } = req.body;
 
         const product = new Product({
-            key: key,
             name: name,
             costInRMB: costInRMB,
             usualPrice: usualPrice,
@@ -95,22 +101,9 @@ app.post("/product", async function (req, res) {
     }
 });
 
-//load product in main page
-app.get("/products", async function (req, res) {
-    try {
-        const products = await Product.find({});
-
-        res.status(200).send(products);
-    } catch (err) {
-        console.log(err);
-        res.status(500).send("Failed");
-    }
-
-    //TODO:
-    //get data from database to replace the "defaultProducts"
+app.delete("/product", function (req, res) {
+    Product.findByIdAndRemove();
 });
-
-app.delete("/product", function (req, res) {});
 
 app.put("/product", function (req, res) {});
 
