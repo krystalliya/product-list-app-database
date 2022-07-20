@@ -101,8 +101,15 @@ app.post("/product", async function (req, res) {
     }
 });
 
-app.delete("/product", function (req, res) {
-    Product.findByIdAndRemove();
+app.post("/deleteproduct", async function (req, res) {
+    try {
+        const { id } = req.body;
+        await Product.findByIdAndRemove(id);
+        res.status(200).send("Deleted product from DB.");
+    } catch (err) {
+        console.log(err);
+        res.status(500).send("Failed");
+    }
 });
 
 app.put("/product", function (req, res) {});
