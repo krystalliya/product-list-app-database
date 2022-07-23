@@ -112,7 +112,18 @@ app.post("/deleteproduct", async function (req, res) {
     }
 });
 
-app.put("/product", function (req, res) {});
+app.put("/product", async function (req, res) {
+    try {
+        const updatedProduct = req.body;
+
+        const requestId = req.body._id;
+        await Product.findByIdAndUpdate({ _id: requestId }, updatedProduct);
+        res.status(200).send("Updated product to DB.");
+    } catch (err) {
+        console.log(err);
+        res.status(500).send("Failed");
+    }
+});
 
 app.get("/view", function (req, res) {
     //TODO:
