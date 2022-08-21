@@ -11,7 +11,7 @@ app.use(express.json());
 app.use(express.static("public"));
 app.use(cors());
 
-mongoose.connect("mongodb://localhost:27017/productsDB", {
+mongoose.connect(process.env.MONGODB_URL, {
     useNewUrlParser: true,
 });
 
@@ -101,6 +101,7 @@ app.post("/product", async function (req, res) {
     }
 });
 
+//delete product
 app.post("/deleteproduct", async function (req, res) {
     try {
         const { id } = req.body;
@@ -112,24 +113,23 @@ app.post("/deleteproduct", async function (req, res) {
     }
 });
 
+//update product
 app.put("/product", async function (req, res) {
     try {
         const updatedProduct = req.body;
 
         const requestId = req.body._id;
+
         await Product.findByIdAndUpdate({ _id: requestId }, updatedProduct);
+
         res.status(200).send("Updated product to DB.");
     } catch (err) {
         console.log(err);
+
         res.status(500).send("Failed");
     }
 });
 
-app.get("/view", function (req, res) {
-    //TODO:
-    //get product data when press view button
-});
-
-app.listen(8000, function () {
+app.listen(process.env.PORT || 8000, function () {
     console.log("Server started on port 8000");
 });
